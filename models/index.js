@@ -11,6 +11,10 @@ const db = {};
 
 
 /////////////////////////////////////////////////////////////////////////////////////////
+
+console.log('🌐 NODE_ENV:', env);
+console.log('🔑 DB_URL:', process.env.DB_URL ? process.env.DB_URL : 'NOT FOUND ❌');
+
 let sequelize;
 if (process.env.DB_URL) {
   sequelize = new Sequelize(process.env.DB_URL, {
