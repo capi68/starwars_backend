@@ -9,13 +9,32 @@ const env = process.env.NODE_ENV || 'development';
 const config = require(__dirname + '/../config/config.js')[env];
 const db = {};
 
+
+/////////////////////////////////////////////////////////////////////////////////////////
 let sequelize;
-if (config.use_env_variable) {
+if (process.env.DB_URL) {
+  sequelize = new Sequelize(process.env.DB_URL, {
+    dialect: 'postgres',
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false
+      }
+    },
+    logging: false 
+  });
+} else if (config.use_env_variable) {
   sequelize = new Sequelize(process.env[config.use_env_variable], config);
 } else {
-  sequelize = new Sequelize(config.database, config.username, config.password, config);
+  sequelize = new Sequelize(
+    config.database,
+    config.username,
+    config.password,
+    config
+  );
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////
 fs
   .readdirSync(__dirname)
   .filter(file => {
@@ -30,6 +49,8 @@ fs
     const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
     db[model.name] = model;
   });
+
+/////////////////////////////////////////////////////////////////////////////////////////
 
 Object.keys(db).forEach(modelName => {
   if (db[modelName].associate) {
