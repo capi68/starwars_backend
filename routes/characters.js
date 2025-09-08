@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { Character } = require("../models"); // import models from sequielize
+const db = require("../models"); // import sequelize db
 const { where } = require("sequelize");
 
 
